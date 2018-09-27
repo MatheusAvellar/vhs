@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8"/>
+    <title> VHS </title>
+    <style type="text/css">
+        @font-face {
+            font-family: "VCR";
+            src: url("./vcr_osd_mono.ttf") format("truetype");
+        }
+        @keyframes turn-on {
+            0%  {
+                animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+                transform: scale(0, 0.0001);
+                filter: brightness(50);
+            }
+            60% {
+                transform: scale(1.3, 0.001);
+                filter: brightness(10);
+            }
+            90% {
+                transform: scale(1, 1.3);
+                filter: brightness(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1, 1);
+            }
+        }
+        @keyframes shiver {
+            0%   {  text-shadow:  1px 0 0 #f00, -1px 0 0 #00f;  }
+            50%  {  text-shadow: -1px 0 0 #f00,  1px 0 0 #00f;  }
+            100% {  text-shadow:  1px 0 0 #f00, -1px 0 0 #00f;  }
+        }
+        @keyframes blurry {
+            0%   {  backdrop-filter:  blur(0px);  }
+            90%  {  backdrop-filter:  blur(0px);  }
+            95%  {  backdrop-filter:  blur(2px);  }
+            100% {  backdrop-filter:  blur(0px);  }
+        }
+        @keyframes glitch-anim-1 {
+            0%   {  clip: rect(-25vh, 100vw,  0vh, 0px);  }
+            100% {  clip: rect(100vh, 100vw,125vh, 0px);  }
+        }
+        @keyframes glitch-anim-2 {
+            0%   {  clip: rect(20vh, 100vw, 40vh, 0px);  }
+            20%  {  clip: rect(60vh, 100vw, 80vh, 0px);  }
+            40%  {  clip: rect( 1vh, 100vw, 21vh, 0px);  }
+            60%  {  clip: rect(73vh, 100vw, 93vh, 0px);  }
+            80%  {  clip: rect( 5vh, 100vw, 25vh, 0px);  }
+            100% {  clip: rect(10vh, 100vw, 30vh, 0px);  }
+        }
+        @keyframes glitch-anim-3 {
+            0%   {  clip: rect(30vh, 100vw, 50vh, 0px);  }
+            20%  {  clip: rect(10vh, 100vw, 30vh, 0px);  }
+            40%  {  clip: rect(17vh, 100vw, 37vh, 0px);  }
+            60%  {  clip: rect( 1vh, 100vw, 21vh, 0px);  }
+            80%  {  clip: rect(45vh, 100vw, 65vh, 0px);  }
+            100% {  clip: rect( 0vh, 100vw, 20vh, 0px);  }
+        }
+        @keyframes blink {
+            0%   {  opacity: 0;  }
+            100% {  opacity: 1;  }
+        }
+        * {
+            margin: 0;
+            border: 0;
+            padding: 0;
+            outline: 0;
+            vertical-align: middle;
+            box-sizing: border-box;
+        }
+        html {
+            --bg: #000;
+            background-color: var(--bg);
+        }
+        html, body {
+            font-family: "VCR", monospace;
+            margin: 0;
+            color: #4fbd5d;
+            opacity: 1;
+            overflow: hidden;
+        }
+        body {
+            transition: opacity .05s ease;
+            background-color: var(--bg);
+        }
+        body[data-step="0"] {
+            opacity: 0;
+        }
+        body[data-step="a"] {
+            animation: turn-on 0.55s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            opacity: 1;
+            --bg: #0000f0;
+        }
+        body[data-step*="b"] {
+            --bg: #101010;
+        }
+        body[data-step="a"] #wrapper {
+            opacity: 0;
+        }
+        #channel {
+            margin: 5vh 2vw;
+            position: absolute;
+        }
+        body[data-step*="d"] #channel {
+            opacity: 0;
+        }
+        #channel p {
+            color: #868f60;
+            position: relative;
+            text-transform: uppercase;
+            font-smooth: never;
+            -webkit-font-smoothing: none;
+            font-smoothing: none;
+            font-weight: normal;
+            font-size: 60px;
+            animation: shiver 1s linear infinite;
+        }
+        #channel p::after, header p::before {
+            content: var(--text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #101010;
+        }
+        #channel p::before {
+            left: 1px;
+            text-shadow: -1px 0 red;
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        #channel p::after {
+            left: -1px;
+            text-shadow: -1px 0 blue;
+            animation: glitch-anim-3 2s infinite linear alternate-reverse;
+        }
+        #color-test {
+            font-size: 0;
+            filter: saturate(50%);
+            opacity: 0;
+        }
+        body[data-step$="b"] #color-test {
+            opacity: 1;
+        }
+        #color-test > div {
+            display: inline-block;
+            background-color: var(--bg);
+        }
+        [data-tall], [data-tiny], [data-last] {
+            height: 66vh;
+            width: calc(100vw / 7);
+        }
+        [data-tiny] {
+            height: 10vh;
+        }
+        [data-cube] {
+            height: 24vh;
+            width: calc((100vw / 7) * 1.25);
+        }
+        [data-mini] {
+            width: calc(100vw / 21);
+        }
+        [data-mini], [data-last],[data-cube] {
+            height: 24vh;
+        }
+        .filter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+        #blur-effect {
+            animation: blurry 5s linear infinite;
+        }
+        #scanline-effect {
+            background-image: linear-gradient(
+                to top,
+                rgba(255, 255, 255, 0.02) 33.33%,
+                rgba(255, 255, 255, 0.04) 33.33%,
+                rgba(255, 255, 255, 0.04) 66.66%,
+                rgba(255, 255, 255, 0.08) 66.66%);
+            background-size: 3px 3px;
+        }
+        #glitch-effect::before {
+            left: 2px;
+            animation: glitch-anim-2 2s infinite linear;
+        }
+        #glitch-effect::after {
+            left: -2px;
+            animation: glitch-anim-1 2s infinite linear;
+        }
+        #glitch-effect::after, #glitch-effect:before {
+            content: "";
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-image: -moz-element(#wrapper);
+        }
+        #wrapper {
+            position: relative;
+            background-color: var(--bg);
+        }
+        #content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            font-size: 20px;
+        }
+        body[data-step*="d"] #content {
+            opacity: 1;
+        }
+        #presentation {
+            width: 50%;
+            height: 50%;
+        }
+        #intro-paragraph::after {
+            content: "_";
+            animation: blink 1.5s steps(2) infinite;
+        }
+    </style>
+</head>
+<body data-step="0" onclick="init();">
+    <section id="wrapper">
+        <section id="channel">
+            <p style="--text:'VIDEO 1'"> VIDEO 1 </p>
+        </section>
+        <section id="content">
+            <section id="presentation">
+                <p id="intro-paragraph"></p>
+            </section>
+        </section>
+        <section id="color-test">
+            <div data-tall style="--bg: #f0f0f0;"></div>
+            <div data-tall style="--bg: #f0f000;"></div>
+            <div data-tall style="--bg: #00f0f0;"></div>
+            <div data-tall style="--bg: #00f000;"></div>
+            <div data-tall style="--bg: #f000f0;"></div>
+            <div data-tall style="--bg: #f00000;"></div>
+            <div data-tall style="--bg: #0000f0;"></div>
+            <div data-tiny style="--bg: #0000f0;"></div>
+            <div data-tiny style="--bg: #131313;"></div>
+            <div data-tiny style="--bg: #f000f0;"></div>
+            <div data-tiny style="--bg: #131313;"></div>
+            <div data-tiny style="--bg: #00f0f0;"></div>
+            <div data-tiny style="--bg: #131313;"></div>
+            <div data-tiny style="--bg: #f0f0f0;"></div>
+            <div data-cube style="--bg: #00214c;"></div>
+            <div data-cube style="--bg: #ffffff;"></div>
+            <div data-cube style="--bg: #32006a;"></div>
+            <div data-cube style="--bg: #131313;"></div>
+            <div data-mini style="--bg: #090909;"></div>
+            <div data-mini style="--bg: #131313;"></div>
+            <div data-mini style="--bg: #1d1d1d;"></div>
+            <div data-last style="--bg: #131313;"></div>
+        </section>
+    </section>
+    <figure id="blur-effect" class="filter"></figure>
+    <figure id="glitch-effect" class="filter"></figure>
+    <figure id="scanline-effect" class="filter"></figure>
+    <script type="text/javascript">
+        let audio = new Audio();
+        audio.preload = true;
+        let has_started = false;
+        function init() {
+            if(has_started) return;
+            has_started = true;
+            audio.ondurationchange = function() {
+                audio.play();
+                setTimeout(begin, audio.duration * 1e3 - 3500);
+            }
+            audio.src = "./on.ogg";
+        }
+        function begin() {
+            document.body.dataset.step = "a";
+            console.log("step " + document.body.dataset.step);
+            setTimeout(_ => {
+                document.body.dataset.step += "b";
+                console.log("step " + document.body.dataset.step);
+                setTimeout(_ => {
+                    document.body.dataset.step += "c";
+                    console.log("step " + document.body.dataset.step);
+                    setTimeout(_ => {
+                        document.body.dataset.step += "d";
+                        console.log("step " + document.body.dataset.step);
+                        setTimeout(start, 750);
+                    }, 2300);
+                }, 2300);
+            }, 1200);
+        }
+
+        function start() {
+            let p = document.getElementById("intro-paragraph");
+            let text = [
+                {
+                    text: "Wake up, Neo..."
+                }
+            ];
+
+            for(let i = 0, l = text.length, c = 0; i < l; i++) {
+                for(let j = 0, k = text[i].text.length; j < k; c++,j++) {
+                    let t = text[i].text[j] == " " ? "&nbsp;"
+                        : text[i].text[j] == "\n" ? "<br>" : text[i].text[j];
+                    setTimeout(_ => {
+                            p.innerHTML += t
+                        },
+                        c * 150
+                    );
+                }
+            }
+        }
+    </script>
+</body>
+</html>
